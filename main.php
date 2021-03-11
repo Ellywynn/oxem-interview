@@ -33,7 +33,10 @@ class Product
 
     public function setType($type)
     {
-        if (!$type) throw new Exception("Type cannot be empty");
+        if (!is_string($type))
+            throw new Exception("Product type must be a string");
+        if (!$type)
+            throw new Exception("Product type cannot be empty");
         $this->type = $type;
     }
 }
