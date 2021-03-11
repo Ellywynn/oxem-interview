@@ -2,8 +2,40 @@
 // animal product
 class Product
 {
-    public $value = -1;
-    public $type = "";
+    private $value = -1;
+    private $type = "undefined";
+
+    public function __construct($type)
+    {
+        $this->type = $type;
+    }
+
+
+    // Getters and setters
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    public function setValue($value)
+    {
+        if (!is_int($value))
+            throw new Exception("Product value must be an integer");
+        if ($value < 0)
+            throw new Exception("Product value must be positive");
+        $this->value = $value;
+    }
+
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    public function setType($type)
+    {
+        if (!$type) throw new Exception("Type cannot be empty");
+        $this->type = $type;
+    }
 }
 
 // parent class Animal
@@ -13,7 +45,7 @@ abstract class Animal
     public $type = "";                  // type of an animal(cow, chicken, etc.)
     public static $globalId = 0;        // used for unique animal identifiers
     public $id = 0;                     // id of an animal object
-    abstract function getProduct();     // update product and return it
+    abstract function updateProduct();     // update product and return it
 }
 
 class Cow extends Animal
@@ -21,14 +53,13 @@ class Cow extends Animal
     function __construct()
     {
         $this->id = ++parent::$globalId;    // get the id, increase global id
-        $this->product = new Product();
+        $this->product = new Product("milk");
         $this->type = "cow";                // set animal types
-        $this->product->type = "milk";
     }
 
-    function getProduct()
+    function updateProduct()
     {
-        $this->product->value = rand(8, 12);
+        $this->product->setValue(rand(8, 12));
         return $this->product;
     }
 }
@@ -38,52 +69,42 @@ class Chicken extends Animal
     function __construct()
     {
         $this->id = ++parent::$globalId;    // get the id, increase global id
-        $this->product = new Product();
-        $this->type = "chicken";            // set animal types
-        $this->product->type = "egg";
+        $this->product = new Product("egg");
+        $this->type = "chicken";
     }
 
-    function getProduct()
+    function updateProduct()
     {
-        $this->product->value = rand(0, 1);
+        $this->product->setValue(rand(0, 1));
         return $this->product;
     }
 }
 
 class Farm
 {
-    private $products = array();    // animal products
     private $animals = array();     // farm animals
 
     // returns farm products
     public function getProducts()
     {
-        // clear an array
-        $products = array();
-
-        foreach ($this->animals as $animal) {
-            // get a new product value
-            $animal->getProduct();
-            // add a new product to the product array
-            $products[$animal->id] = $animal->product;
-        }
-
-        return $products;
+        // get a new product value
+        foreach ($this->animals as $animal)
+            $animal->updateProduct();
     }
 
     public function getAndDisplayProducts()
     {
-        $result = $this->getProducts();
+        $this->getProducts();
         $this->displayInfo();
-
-        return $result;
     }
 
     // add animal to the farm and products
     public function addAnimal($animal)
     {
-        array_push($this->animals, $animal);
-        $this->products[$animal->id] = $animal->product;
+        // check for valid data type
+        if ($animal instanceof Cow || $animal instanceof Chicken)
+            array_push($this->animals, $animal);
+        else throw new Error("Wrong animal type");
     }
 
     // display farm information
@@ -92,26 +113,20 @@ class Farm
         $milkSum = 0;
         $eggSum = 0;
 
-        echo "Animal:\t\t\tProduct:\n";
+        echo "Id:\tAnimal type:\tProduct Value:\tProduct type:\n";
         // display info about each animal
         foreach ($this->animals as $animal) {
             // shortcut
             $product = $animal->product;
 
+            if ($product->getType() === "egg")
+                $eggSum += $product->getValue();
+            else if ($product->getType() === "milk")
+                $milkSum += $product->getValue();
+
             // display information
-            if ($product->type === "egg")
-                $eggSum += $product->value;
-            else if ($product->type === "milk")
-                $milkSum += $product->value;
-            echo "#" . $animal->id . ': ' . $animal->type;
-
-            // output formatting
-            if ($animal->type === "cow" && $animal->id < 10)
-                echo "\t\t\t";
-            else
-                echo "\t\t";
-
-            echo 'value = ' . $animal->product->value . '; type: ' . $animal->product->type . "\n";
+            echo "#" . $animal->id . "\t" . $animal->type . "\t\t";
+            echo $animal->product->getValue() . "\t\t" . $animal->product->getType() . "\n";
         }
 
         // display results
@@ -133,10 +148,4 @@ for ($i = 0; $i < 10; $i++)
 for ($i = 0; $i < 20; $i++)
     $farm->addAnimal(new Chicken());
 
-// get the result and display it
-$products = $farm->getProducts();
-$farm->displayInfo();
-
-echo "-----Get and display products-----\n";
-
-$products = $farm->getAndDisplayProducts();
+$farm->getAndDisplayProducts();
