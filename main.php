@@ -149,3 +149,7 @@ for ($i = 0; $i < 20; $i++)
     $farm->addAnimal(new Chicken());
 
 $farm->getAndDisplayProducts();
+
+echo "----------------\n";
+
+$farm->getAndDisplayProducts();
