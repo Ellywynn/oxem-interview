@@ -12,8 +12,11 @@ for ($i = 0; $i < 10; $i++)
 for ($i = 0; $i < 20; $i++)
     $farm->addAnimal(new Chicken());
 
+echo "First test:\n";
 $farm->getAndDisplayProducts();
 
 echo "----------------\n";
 
-$farm->getAndDisplayProducts();
+echo "Second test:\n";
+$farm->getProducts();
+$farm->displayInfo();
