@@ -1,0 +1,18 @@
+{
+    "name": "ellywynn/interview",
+    "authors": [
+        {
+            "name": "Ellywynn",
+            "email": "whatisyouandme@mail.ru"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "classmap": [
+            "src/"
+        ],
+        "psr-4": {
+            "app\\": "app"
+        }
+    }
+}
